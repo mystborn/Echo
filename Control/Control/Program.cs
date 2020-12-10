@@ -35,19 +35,8 @@ namespace Control
 
         static void Main(string[] args)
         {
-            using(var context = new UsbContext())
-            {
-                ListDevices(context);
-                Console.WriteLine();
-                Console.WriteLine("Press any key to continue...");
-                Console.WriteLine();
-                Console.ReadKey();
-                ListDevices(context);
-                Console.WriteLine();
-                Console.WriteLine("Press any key to finish...");
-                Console.WriteLine();
-                Console.ReadKey();
-            }
+            OpenDeviceInAccessoryMode();
+            OpenDeviceIO();
         }
 
         private static void ListDevices(UsbContext context)
