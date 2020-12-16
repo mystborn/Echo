@@ -49,7 +49,7 @@ namespace Control
                     {
                         if(device.TryOpen())
                         {
-
+                            device.Info 
                         }
                     }
                     else
