@@ -18,8 +18,8 @@ namespace ControlK
         private HotK _listener;
         private bool _disposed = false;
 
-        public event EventHandler<UsbK> Connected;
-        public event EventHandler<UsbK> Disconnected;
+        public event EventHandler<UsbDevice> Connected;
+        public event EventHandler<UsbDevice> Disconnected;
 
         public DeviceListener(ushort vid, ushort pid)
         {

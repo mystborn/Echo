@@ -93,11 +93,13 @@ namespace ControlK
             return false;
         }
 
-        private static void StartEcho(object sender, UsbK usb)
+        private static void StartEcho(object sender, UsbDevice usb)
         {
+            _logger.Info("Attempting to start echo thread for {SerialNumber} ({VID}/{PID})", usb.SerialNumber, usb.Vid, usb.Pid);
+
             if (!GetIOPipes(usb, out var read, out var write))
             {
-                _logger.Error("Failed to open IO Pipes");
+                _logger.Error("Failed to open IO Pipes for {SerialNumber} ({VID}/{PID})", usb.SerialNumber, usb.Vid, usb.Pid);
                 return;
             }
 
@@ -108,6 +110,7 @@ namespace ControlK
 
             var thread = new Thread(() =>
             {
+                _logger.Info("Started echo thread for {SerialNumber} ({VID}/{PID})", usb.SerialNumber, usb.Vid, usb.Pid);
                 var buffer = new byte[512];
                 var error = false;
                 while (_running && !error)
@@ -124,12 +127,14 @@ namespace ControlK
                             case Constants.ERROR_SEM_TIMEOUT:
                                 break;
                             default:
-                                Console.WriteLine($"Unexpected error code: {errorCode}");
+                                _logger.Error("Unexpected error for {SerialNumber} ({VID}/{PID}). Error code: {ErrorCode}", usb.SerialNumber, usb.Vid, usb.Pid, errorCode);
                                 error = true;
                                 break;
                         }
                     }
                 }
+
+                _logger.Info("Stopped echo thread for {SerialNumber} ({VID}/{PID})", usb.SerialNumber, usb.Vid, usb.Pid);
             });
 
             _echoThreads.Add(usb.Handle.Pointer, thread);
@@ -137,7 +142,7 @@ namespace ControlK
             thread.Start();
         }
 
-        private static void StopEcho(object sender, UsbK usb)
+        private static void StopEcho(object sender, UsbDevice usb)
         {
             if (!_echoThreads.TryGetValue(usb.Handle.Pointer, out var thread))
                 return;
